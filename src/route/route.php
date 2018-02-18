@@ -15,15 +15,20 @@ function execute($sql, $args) {
 	$statement->execute($args);
 }
 
+function executeFetch($sql) {
+	$db = db::getInstance();
+	$dbConnection = $db->getConnection();
+	$statement = $dbConnection->query($sql);
+
+	return $statement->fetchAll(PDO::FETCH_OBJ);
+}
+
 $getScore = function (Request $request, Response $response, array $args) {
 	$sql = 'SELECT date, name, number, throw_one_a, throw_one_b, throw_two_a, throw_two_b, throw_three_a, throw_three_b FROM games g INNER JOIN frames f ON g.id = f.game_id ORDER BY game_id, number ASC';
 	$resp = array('status'=>'', 'message'=>'', 'data'=>'');
 	$status = 200;
 	try {
-		$db = db::getInstance();
-		$dbConnection = $db->getConnection();
-		$statement = $dbConnection->query($sql);
-		$games = $statement->fetchAll(PDO::FETCH_OBJ);
+		$games = executeFetch($sql);
 		$resp['status'] = 'success';
 		$gamesMap = array();
 		if (!empty($games) && count($games > 0)) {
@@ -212,10 +217,7 @@ $getGame = function (Request $request, Response $response, array $args) {
 
 	$sql = 'SELECT id, name FROM games ORDER BY id ASC';
 	try {
-		$db = db::getInstance();
-		$dbConnection = $db->getConnection();
-		$statement = $dbConnection->query($sql);
-		$gamesByName = $statement->fetchAll(PDO::FETCH_OBJ);
+		$gamesByName = executeFetch($sql);
 		$resp['status'] = 'success';
 		$resp['data'] = $gamesByName;
 	} catch (Exception $e) {

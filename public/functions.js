@@ -61,7 +61,7 @@ var computeScore = function (frame, frames) {
 	}
 	return runningScore;
 }
-//process score to scoreboard
+
 var processScoreToTable = function (scoreObj) {
 	var table = document.createElement('table');
 	table.className += "table table-hover";
@@ -103,7 +103,6 @@ var processScoreToTable = function (scoreObj) {
 	document.getElementById('scoreboard-container').appendChild(table);
 }
 
-//get score for all games
 var getScore = function () {
 	var xhr = new XMLHttpRequest();
 	xhr.open('GET', 'api/score');
