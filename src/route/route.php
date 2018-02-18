@@ -117,7 +117,7 @@ $updateFrame = function (Request $request, Response $response, array $args) {
 	$resp = array('status'=>'', 'message'=>'', 'data'=>'');
 	$status = 200;
 	$args = $request->getParsedBody();
-	var_dump($args); die;
+
 	if (empty($args['game_id']) || empty($args['number']) || (empty($args['throw_one_a']) && $args['throw_one_a'] != '0') || (empty($args['throw_one_b']) && $args['throw_one_b'] != '0')) {
 		$status = 400;
 		$resp['status'] = 'error';

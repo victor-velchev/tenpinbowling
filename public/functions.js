@@ -195,30 +195,42 @@ var updateGameDetailsView = function(el) {
 	for (var i = 0; i < el.length; i++) {
 		items += '<tr><th scope="row">' + el[i].number + '</th>';
 		items += '<td>\
-			<input type="text" class="form-control" id="field-throw_one-a-' + el[i].number + '" value="' + el[i].throw_one_a + '">\
+			<input type="text" class="form-control" id="field-throw_one-a-' + el[i].number + '" value="' + el[i].throw_one_a + '" onkeyup="setValueNow(this);">\
 		</td>';
 		items += '<td>\
-			<input type="text" class="form-control" id="field-throw_one-b-' + el[i].number + '" value="' + el[i].throw_one_b + '">\
+			<input type="text" class="form-control" id="field-throw_one-b-' + el[i].number + '" value="' + el[i].throw_one_b + '" onkeyup="setValueNow(this);">\
 		</td>';
 		var throw_two_disabled = 'disabled';
 		if (el[i].hasOwnProperty('throw_two_a') && el[i].hasOwnProperty('throw_two_b')) {
 			throw_two_disabled = '';
+		} else {
+			if (el[i].number === "10") {
+				throw_two_disabled = '';
+				el[i].throw_two_a = 0;
+				el[i].throw_two_b = 0;
+			}
 		}
 		items += '<td>\
-			<input type="text" class="form-control" id="field-throw_two-a-' + el[i].number + '" value="' + (throw_two_disabled === 'disabled' ? '' : el[i].throw_two_a) + '" ' + throw_two_disabled + '>\
+			<input type="text" class="form-control" id="field-throw_two-a-' + el[i].number + '" value="' + (throw_two_disabled === 'disabled' ? '' : el[i].throw_two_a) + '" ' + throw_two_disabled + ' onkeyup="setValueNow(this);">\
 		</td>';
 		items += '<td>\
-			<input type="text" class="form-control" id="field-throw_two-b-' + el[i].number + '" value="' + (throw_two_disabled === 'disabled' ? '' : el[i].throw_two_b) + '" ' + throw_two_disabled + '>\
+			<input type="text" class="form-control" id="field-throw_two-b-' + el[i].number + '" value="' + (throw_two_disabled === 'disabled' ? '' : el[i].throw_two_b) + '" ' + throw_two_disabled + ' onkeyup="setValueNow(this);">\
 		</td>';
 		var throw_three_disabled = 'disabled';
 		if (el[i].hasOwnProperty('throw_three_a') && el[i].hasOwnProperty('throw_three_b')) {
 			throw_three_disabled = '';
+		} else {
+			if (el[i].number === "10" && el[i].throw_two_a === "10") {
+				throw_three_disabled = '';
+				el[i].throw_three_a = 0;
+				el[i].throw_three_b = 0;
+			}
 		}
 		items += '<td>\
-			<input type="text" class="form-control" id="field-throw_three-a-' + el[i].number + '" value="' + (throw_three_disabled === 'disabled' ? '' : el[i].throw_three_a) + '" ' + throw_three_disabled + '>\
+			<input type="text" class="form-control" id="field-throw_three-a-' + el[i].number + '" value="' + (throw_three_disabled === 'disabled' ? '' : el[i].throw_three_a) + '" ' + throw_three_disabled + ' onkeyup="setValueNow(this);">\
 		</td>';
 		items += '<td>\
-			<input type="text" class="form-control" id="field-throw_three-b-' + el[i].number + '" value="' + (throw_three_disabled === 'disabled' ? '' : el[i].throw_three_b) + '" ' + throw_three_disabled + '>\
+			<input type="text" class="form-control" id="field-throw_three-b-' + el[i].number + '" value="' + (throw_three_disabled === 'disabled' ? '' : el[i].throw_three_b) + '" ' + throw_three_disabled + ' onkeyup="setValueNow(this);">\
 		</td>';
 		items += '<td><button type="button" class="btn btn-primary btn-sm" id="btn-field-' + el[i].number + '" onClick="updateGameFrame(this)">Update</button></td>';
 	}
@@ -248,6 +260,10 @@ var getGameDetailsById = function() {
 	xhr.send();
 };
 
+var setValueNow = function(el) {
+	el.value = document.getElementById(el.id).value; 
+}
+
 var updateGameFrame = function(btnElement) {
 	var numberAsId = btnElement.id;
 	var lastIndex = numberAsId.lastIndexOf('-');
@@ -262,8 +278,8 @@ var updateGameFrame = function(btnElement) {
 	var gameId = selection.options[selection.selectedIndex].value;
 	var	params = "game_id=" + gameId + "&number=" + numberAsId + "&throw_one_a=" + fieldThrowOneA.value + '&throw_one_b=' + fieldThrowOneB.value;
 
-	if (numberAsId === 10) {
-		params += "&throw_two_a=" + fieldThrowTwoA.value + '&throw_one_b=' + fieldThrowTwoB.value + "&throw_three_a=" + fieldThrowThreeA.value + '&throw_three_b=' + fieldThrowThreeB.value;
+	if (numberAsId === "10") {
+		params += "&throw_two_a=" + fieldThrowTwoA.value + '&throw_two_b=' + fieldThrowTwoB.value + "&throw_three_a=" + fieldThrowThreeA.value + '&throw_three_b=' + fieldThrowThreeB.value;
 	}
 
 	var xhr = new XMLHttpRequest();
@@ -271,9 +287,7 @@ var updateGameFrame = function(btnElement) {
 	xhr.setRequestHeader("Content-type", "application/x-www-form-urlencoded");
 	xhr.onload = function () {
 		if (xhr.status === 200) {
-			document.getElementById('nav-selector').style["display"] = "";
-			document.getElementById('create-game-div').style["display"] = "none";
-			document.getElementById('modify-game-div').style["display"] = "none";
+			location.reload();
 		} else {
 			alert('Request failed.  Returned status of ' + xhr.status);
 		}
