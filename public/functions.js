@@ -125,6 +125,38 @@ var getScore = function () {
 		}
 	};
 	xhr.send();
-}
+};
 
-//getScore();//////////////////////////////////////////////////////////////////////////////////////uncomment to start
+//getScore();
+
+var getScoreboard = function() {
+	alert('You clicked: getScoreboard');
+};
+
+var getCreateGame = function() {
+	document.getElementById('nav-selector').style["display"] = "none";
+	document.getElementById('create-game-div').style["display"] = "block";
+};
+
+var createGame = function() {
+	var gamename = document.getElementById('gamename').value;
+	var params = "name=" + gamename;
+	if (gamename && gamename.length > 1) {
+		var xhr = new XMLHttpRequest();
+		xhr.open('POST', 'api/game', true);
+		xhr.setRequestHeader("Content-type", "application/x-www-form-urlencoded");
+		xhr.onload = function () {
+			if (xhr.status === 200) {
+				document.getElementById('nav-selector').style["display"] = "";
+				document.getElementById('create-game-div').style["display"] = "none";
+			} else {
+				alert('Request failed.  Returned status of ' + xhr.status);
+			}
+		};
+		xhr.send(params);
+	}
+};
+
+var getModifyGame = function() {
+	alert('You clicked: getModifyGame');
+};
