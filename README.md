@@ -15,8 +15,13 @@ The project is depending on Slim (https://www.slimframework.com/docs/v3/start/in
 ## API Reference
 
 GET /api/score -> get score for all played games
+
 POST /api/frame -> create an empty frame for a particular game
+
 PUT /api/frame -> update a particular frame for a game
+
 GET /api/game -> get all available games
-GET /api/game/* -> get a particular game data 
+
+GET /api/game/* -> get a particular game data
+
 POST /api/game -> create a game
