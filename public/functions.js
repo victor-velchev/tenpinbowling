@@ -158,5 +158,15 @@ var createGame = function() {
 };
 
 var getModifyGame = function() {
-	alert('You clicked: getModifyGame');
+	var xhr = new XMLHttpRequest();
+	xhr.open('GET', 'api/game');
+	xhr.onload = function () {
+		if (xhr.status === 200) {
+			var resp = JSON.parse(xhr.responseText);
+			console.log(resp.data);
+		} else {
+			alert('Request failed.  Returned status of ' + xhr.status);
+		}
+	};
+	xhr.send();
 };

@@ -17,7 +17,7 @@ function execute($sql, $args) {
 
 $getScore = function (Request $request, Response $response, array $args) {
 	$sql = 'SELECT date, name, number, throw_one_a, throw_one_b, throw_two_a, throw_two_b, throw_three_a, throw_three_b FROM games g INNER JOIN frames f ON g.id = f.game_id ORDER BY game_id, number ASC';
-	$resp = array('status'=>'', 'data'=>'', 'message'=>'');
+	$resp = array('status'=>'', 'message'=>'', 'data'=>'');
 	$status = 200;
 	try {
 		$db = db::getInstance();
@@ -58,7 +58,7 @@ $getScore = function (Request $request, Response $response, array $args) {
 };
 
 $createFrame = function (Request $request, Response $response, array $args) {
-	$resp = array('status'=>'', 'data'=>'', 'message'=>'');
+	$resp = array('status'=>'', 'message'=>'', 'data'=>'');
 	$status = 200;
 	$args = $request->getParsedBody();
 
@@ -117,7 +117,7 @@ $createFrame = function (Request $request, Response $response, array $args) {
 };
 
 // $updateFrame = function (Request $request, Response $response, array $args) {
-// 	$resp = array('status'=>'', 'data'=>'', 'message'=>'');
+// 	$resp = array('status'=>'', 'message'=>'', 'data'=>'');
 // 	$status = 400;
 // 	$args = $request->getParsedBody();
 
@@ -162,7 +162,7 @@ $createFrame = function (Request $request, Response $response, array $args) {
 // };
 
 // $deleteFrame = function (Request $request, Response $response, array $args) {
-// 	$resp = array('status'=>'', 'data'=>'', 'message'=>'');
+// 	$resp = array('status'=>'', 'message'=>'', 'data'=>'');
 // 	$status = 200;
 // 	$args = $request->getParsedBody();
 
@@ -197,6 +197,76 @@ $createFrame = function (Request $request, Response $response, array $args) {
 
 //     return $response->withJson($resp, $status);
 // };
+
+$getGame = function (Request $request, Response $response, array $args) {
+	$resp = array('status'=>'', 'message'=>'', 'data'=>'');
+	$status = 200;
+
+	$sql = 'SELECT id, name FROM games ORDER BY id ASC';
+	try {
+		$db = db::getInstance();
+		$dbConnection = $db->getConnection();
+		$statement = $dbConnection->query($sql);
+		$gamesByName = $statement->fetchAll(PDO::FETCH_OBJ);
+		$resp['status'] = 'success';
+		$resp['data'] = $gamesByName;
+	} catch (Exception $e) {
+		$resp['status'] = 'error';
+		$resp['message'] = $e->getMessage();
+	}
+
+    return $response->withJson($resp, $status);
+};
+
+$getGameById = function (Request $request, Response $response, array $args) {
+	$resp = array('status'=>'', 'message'=>'', 'data'=>'');
+	$status = 400;
+
+	if (empty($args['game_id'])) {
+		$status = 400;
+		$resp['status'] = 'error';
+		$resp['message'] = 'Some of the required parameters to get a game by id are missing';
+	} else {
+		$game_id = intval(sanitize($args['game_id']));
+		$check = $game_id > 0;
+
+		if ($check) {
+			$sql = 'SELECT number, throw_one_a, throw_one_b, throw_two_a, throw_two_b, throw_three_a, throw_three_b FROM frames WHERE game_id = :game_id';
+			try {
+				$db = db::getInstance();
+				$dbConnection = $db->getConnection();
+				$statement = $dbConnection->prepare($sql);
+				$statement->bindValue(':game_id', $game_id);
+				$statement->execute();
+				$frames = $statement->fetchAll(PDO::FETCH_OBJ);
+				$framesData = array();
+				foreach ($frames as $frame) {
+					$frameData = array('number'=>$frame->number, 'throw_one_a'=>$frame->throw_one_a, 'throw_one_b'=>$frame->throw_one_b);
+					if (!empty($frame->throw_two_a)) {
+						$frameData['throw_two_a'] = $frame->throw_two_a;
+						$frameData['throw_two_b'] = $frame->throw_two_b;
+					}
+					if (!empty($frame->throw_three_a)) {
+						$frameData['throw_three_a'] = $frame->throw_three_a;
+						$frameData['throw_three_b'] = $frame->throw_three_b;
+					}
+					$framesData[] = $frameData;
+				}
+				$resp['status'] = 'success';
+				$resp['data'] = $framesData;
+			} catch (Exception $e) {
+				$resp['status'] = 'error';
+				$resp['message'] = $e->getMessage();
+			}
+		} else {
+			$statu = 200;
+			$resp['status'] = 'error';
+			$resp['message'] = 'Some of the required parameters to update the frame are incorrect';
+		}
+	}
+
+    return $response->withJson($resp, $status);
+};
 
 $createGame = function (Request $request, Response $response, array $args) {
 	$resp = array('status'=>'', 'data'=>'', 'message'=>'');
@@ -234,7 +304,7 @@ $createGame = function (Request $request, Response $response, array $args) {
 };
 
 // $deleteGame = function (Request $request, Response $response, array $args) {
-// 	$resp = array('status'=>'', 'data'=>'', 'message'=>'');
+// 	$resp = array('status'=>'', 'message'=>'', 'data'=>'');
 // 	$status = 200;
 // 	$args = $request->getParsedBody();
 
@@ -269,7 +339,7 @@ $createGame = function (Request $request, Response $response, array $args) {
 // };
 
 // $updateGame = function (Request $request, Response $response, array $args) {
-// 	$resp = array('status'=>'', 'data'=>'', 'message'=>'');
+// 	$resp = array('status'=>'', 'message'=>'', 'data'=>'');
 // 	$status = 200;
 // 	$args = $request->getParsedBody();
 
@@ -311,6 +381,8 @@ $app->post('/api/frame', $createFrame);
 // $app->delete('/api/frame', $deleteFrame);
 // $app->put('/api/frame', $updateFrame);
 
+$app->get('/api/game', $getGame);
+$app->get('/api/game/{game_id}', $getGameById);
 $app->post('/api/game', $createGame);
 // $app->delete('/api/game', $deleteGame);
 // $app->put('/api/game', $updateGame);
