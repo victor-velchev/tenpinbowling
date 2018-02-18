@@ -76,7 +76,7 @@ $createFrame = function (Request $request, Response $response, array $args) {
 		$throw_three_a = intval(sanitize($args['throw_three_a']));
 		$throw_three_b = intval(sanitize($args['throw_three_b']));
 		if ($number < 10) {
-			$check = $game_id > 0 && $number > 0 &&
+			$check = $game_id > 0 && $number >= 0 &&
 			($throw_one_a >= 0 && $throw_one_a <= 10 && $throw_one_b >= 0 && $throw_one_b <= 10 && ($throw_one_a + $throw_one_b) <= 10);
 		} else if ($number == 10) {
 			$check = $game_id > 0 &&

@@ -193,6 +193,7 @@ var updateGameDetailsView = function(el) {
 	</thead>\
 	<tbody>';
 	var lastFrame = false;
+	var nextAvailableFrame = 1;
 	for (var i = 0; i < el.length; i++) {
 		items += '<tr><th scope="row">' + el[i].number + '</th>';
 		items += '<td>\
@@ -205,7 +206,7 @@ var updateGameDetailsView = function(el) {
 		if (el[i].hasOwnProperty('throw_two_a') && el[i].hasOwnProperty('throw_two_b')) {
 			throw_two_disabled = '';
 		} else {
-			if (el[i].number === "10") {
+			if (el[i].number === "10" && el[i].throw_one_a === "10") {
 				throw_two_disabled = '';
 				el[i].throw_two_a = 0;
 				el[i].throw_two_b = 0;
@@ -236,10 +237,12 @@ var updateGameDetailsView = function(el) {
 		items += '<td><button type="button" class="btn btn-primary btn-sm" id="btn-field-' + el[i].number + '" onClick="updateGameFrame(this)">Update</button></td>';
 		if (el[i].number === "10") {
 			lastFrame = true;
+		} else {
+			nextAvailableFrame = parseInt(el[i].number) + 1;
 		}
 	}
 
-	var frameBtn = '<button type="button" class="btn btn-warning" style="margin-left: 10px">Add frame</button>';
+	var frameBtn = '<button type="button" class="btn btn-warning" style="margin-left: 10px" onClick="createFrame(' + nextAvailableFrame + ')">Add frame</button>';
 	if (lastFrame) {
 		frameBtn = '';
 	}
@@ -249,6 +252,23 @@ var updateGameDetailsView = function(el) {
 	</table>' + frameBtn + '</div>';
 	var detailsContainer = document.getElementById('game-details');
 	detailsContainer.outerHTML = items;
+}
+
+var createFrame = function(frameId = 1) {
+	var selection = document.getElementById('available-games');
+	var gameId = selection.options[selection.selectedIndex].value;
+	var params = 'game_id=' + gameId + '&number=' + frameId + '&throw_one_a=0&throw_one_b=0&throw_two_a=0&throw_two_b=0&throw_three_a=0&throw_three_b=0';
+	var xhr = new XMLHttpRequest();
+	xhr.open('POST', 'api/frame', true);
+	xhr.setRequestHeader("Content-type", "application/x-www-form-urlencoded");
+	xhr.onload = function () {
+		if (xhr.status === 200) {
+			location.reload();
+		} else {
+			alert('Request failed.  Returned status of ' + xhr.status);
+		}
+	};
+	xhr.send(params);
 }
 
 var getGameDetailsById = function() {
