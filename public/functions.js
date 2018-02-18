@@ -192,6 +192,7 @@ var updateGameDetailsView = function(el) {
 		</tr>\
 	</thead>\
 	<tbody>';
+	var lastFrame = false;
 	for (var i = 0; i < el.length; i++) {
 		items += '<tr><th scope="row">' + el[i].number + '</th>';
 		items += '<td>\
@@ -233,11 +234,19 @@ var updateGameDetailsView = function(el) {
 			<input type="text" class="form-control" id="field-throw_three-b-' + el[i].number + '" value="' + (throw_three_disabled === 'disabled' ? '' : el[i].throw_three_b) + '" ' + throw_three_disabled + ' onkeyup="setValueNow(this);">\
 		</td>';
 		items += '<td><button type="button" class="btn btn-primary btn-sm" id="btn-field-' + el[i].number + '" onClick="updateGameFrame(this)">Update</button></td>';
+		if (el[i].number === "10") {
+			lastFrame = true;
+		}
+	}
+
+	var frameBtn = '<button type="button" class="btn btn-warning" style="margin-left: 10px">Add frame</button>';
+	if (lastFrame) {
+		frameBtn = '';
 	}
 
 	items += '</tr>\
 		</tbody>\
-	</table></div>';
+	</table>' + frameBtn + '</div>';
 	var detailsContainer = document.getElementById('game-details');
 	detailsContainer.outerHTML = items;
 }
