@@ -69,9 +69,6 @@ $createFrame = function (Request $request, Response $response, array $args) {
 	} else {
 		$game_id = intval(sanitize($args['game_id']));
 		$number = intval(sanitize($args['number']));
-		$strike = sanitize($args['strike']) === 'true' ? true : false;
-		$spare = sanitize($args['spare']) === 'true' ? true : false;
-		$misfire = sanitize($args['misfire']) === 'true' ? true : false;
 		$throw_one_a = intval(sanitize($args['throw_one_a']));
 		$throw_one_b = intval(sanitize($args['throw_one_b']));
 		$throw_two_a = intval(sanitize($args['throw_two_a']));
@@ -116,50 +113,61 @@ $createFrame = function (Request $request, Response $response, array $args) {
     return $response->withJson($resp, $status);
 };
 
-// $updateFrame = function (Request $request, Response $response, array $args) {
-// 	$resp = array('status'=>'', 'message'=>'', 'data'=>'');
-// 	$status = 200;
-// 	$args = $request->getParsedBody();
+$updateFrame = function (Request $request, Response $response, array $args) {
+	$resp = array('status'=>'', 'message'=>'', 'data'=>'');
+	$status = 200;
+	$args = $request->getParsedBody();
+	var_dump($args); die;
+	if (empty($args['game_id']) || empty($args['number']) || (empty($args['throw_one_a']) && $args['throw_one_a'] != '0') || (empty($args['throw_one_b']) && $args['throw_one_b'] != '0')) {
+		$status = 400;
+		$resp['status'] = 'error';
+		$resp['message'] = 'Some of the required parameters to populate a frame are missing';
+	} else {
+		$game_id = intval(sanitize($args['game_id']));
+		$number = intval(sanitize($args['number']));
+		$throw_one_a = intval(sanitize($args['throw_one_a']));
+		$throw_one_b = intval(sanitize($args['throw_one_b']));
+		$throw_two_a = intval(sanitize($args['throw_two_a']));
+		$throw_two_b = intval(sanitize($args['throw_two_b']));
+		$throw_three_a = intval(sanitize($args['throw_three_a']));
+		$throw_three_b = intval(sanitize($args['throw_three_b']));
+		if ($number < 10) {
+			$check = $game_id > 0 && $number > 0 &&
+			($throw_one_a >= 0 && $throw_one_a <= 10 && $throw_one_b >= 0 && $throw_one_b <= 10 && ($throw_one_a + $throw_one_b) <= 10);
+		} else if ($number == 10) {
+			$check = $game_id > 0 &&
+			($throw_one_a >= 0 && $throw_one_a <= 10 && $throw_one_b >= 0 && $throw_one_b <= 10 && ($throw_one_a + $throw_one_b) <= 10) &&
+			($throw_two_a >= 0 && $throw_two_a <= 10 && $throw_two_b >= 0 && $throw_two_b <= 10 && ($throw_two_a + $throw_two_b) <= 10) &&
+			($throw_three_a >= 0 && $throw_three_a <= 10 && $throw_three_b >= 0 && $throw_three_b <= 10 && ($throw_three_a + $throw_three_b) <= 10);
+		}
+		if ($check) {
+			$sql = 'UPDATE frames SET throw_one_a = :throw_one_a, throw_one_b = :throw_one_b, throw_two_a = :throw_two_a, throw_two_b = :throw_two_b, throw_three_a = :throw_three_a, throw_three_b = :throw_three_b WHERE (game_id = :game_id AND number = :number)';
+			try {
+				execute($sql, array(
+					':game_id'=>$game_id,
+					':number'=>$number,
+					':throw_one_a'=>$throw_one_a,
+					':throw_one_b'=>$throw_one_b,
+					':throw_two_a'=>$throw_two_a,
+					':throw_two_b'=>$throw_two_b,
+					':throw_three_a'=>$throw_three_a,
+					':throw_three_b'=>$throw_three_b
+				));
+				$resp['status'] = 'success';
+				$resp['data'] = 'frame updated';
+			} catch (Exception $e) {
+				$resp['status'] = 'error';
+				$resp['message'] = $e->getMessage();
+			}
+		} else {
+			$status = 200;
+			$resp['status'] = 'error';
+			$resp['message'] = 'Some of the required parameters to update the frame are incorrect';
+		}
+	}
 
-// 	if (empty($args['game_id']) || empty($args['number']) || empty($args['strike']) || empty($args['spare']) || (empty($args['throw_one']) && $args['throw_one'] != '0') || (empty($args['throw_two']) && $args['throw_two'] != '0')) {
-// 		$status = 400;
-// 		$resp['status'] = 'error';
-// 		$resp['message'] = 'Some of the required parameters to populate a frame are missing';
-// 	} else {
-// 		$game_id = intval(sanitize($args['game_id']));
-// 		$number = intval(sanitize($args['number']));
-// 		$strike = sanitize($args['strike']) === 'true' ? true : false;
-// 		$spare = sanitize($args['spare']) === 'true' ? true : false;
-// 		$throw_one = intval(sanitize($args['throw_one']));
-// 		$throw_two = intval(sanitize($args['throw_two']));
-// 		$check = $game_id > 0 && ($number > 0 && $number < 11) && (($strike == true && $spare == false) || ($strike == false && $spare == true) || ($strike == false && $spare == false)) && ($throw_one >= 0 && $throw_two >= 0 && ($throw_one + $throw_two) <= 10);
-
-// 		if ($check) {
-// 			$sql = 'UPDATE frames SET strike = :strike, spare = :spare, throw_one = :throw_one, throw_two = :throw_two WHERE (game_id = :game_id AND number = :number)';
-// 			try {
-// 				execute($sql, array(
-// 					':game_id'=>$game_id,
-// 					':number'=>$number,
-// 					':strike'=>$strike,
-// 					':spare'=>$spare,
-// 					':throw_one'=>$throw_one,
-// 					':throw_two'=>$throw_two
-// 				));
-// 				$resp['status'] = 'success';
-// 				$resp['data'] = 'frame updated';
-// 			} catch (Exception $e) {
-// 				$resp['status'] = 'error';
-// 				$resp['message'] = $e->getMessage();
-// 			}
-// 		} else {
-// 			$status = 200;
-// 			$resp['status'] = 'error';
-// 			$resp['message'] = 'Some of the required parameters to update the frame are incorrect';
-// 		}
-// 	}
-
-//     return $response->withJson($resp, $status);
-// };
+    return $response->withJson($resp, $status);
+};
 
 // $deleteFrame = function (Request $request, Response $response, array $args) {
 // 	$resp = array('status'=>'', 'message'=>'', 'data'=>'');
@@ -379,7 +387,7 @@ $app->get('/api/score', $getScore);
 
 $app->post('/api/frame', $createFrame);
 // $app->delete('/api/frame', $deleteFrame);
-// $app->put('/api/frame', $updateFrame);
+$app->put('/api/frame', $updateFrame);
 
 $app->get('/api/game', $getGame);
 $app->get('/api/game/{game_id}', $getGameById);

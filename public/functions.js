@@ -63,7 +63,6 @@ var computeScore = function (frame, frames) {
 }
 //process score to scoreboard
 var processScoreToTable = function (scoreObj) {
-	// console.log(scoreObj);
 	var table = document.createElement('table');
 	table.className += "table table-hover";
 	table.innerHTML =
@@ -79,12 +78,8 @@ var processScoreToTable = function (scoreObj) {
 		var scoresDiv = '';
 		var scoreCount = 0;
 		for (var i = 0; i < scoreObj[item].frames.length; i++) {
-			// console.log(scoreObj[item].frames[i]);
-			// console.log(computeScore(scoreObj[item].frames[i], scoreObj[item].frames));
 			var frameScore = computeScore(scoreObj[item].frames[i], scoreObj[item].frames);
 			scoreCount += frameScore;
-			// console.log('frame ' + scoreObj[item].frames[i].number + ': ' + frameScore);
-			// console.log('total score: ' + scoreCount);
 			framesDiv += 'frame ' + scoreObj[item].frames[i].number + ': ' + scoreObj[item].frames[i].throw_one_a + ' | ' + scoreObj[item].frames[i].throw_one_b + '<br>';
 			if (scoreObj[item].frames[i].hasOwnProperty('throw_two_a') && scoreObj[item].frames[i].hasOwnProperty('throw_two_b')) {
 				framesDiv += 'frame ' + scoreObj[item].frames[i].number + ': ' + scoreObj[item].frames[i].throw_two_a + ' | ' + scoreObj[item].frames[i].throw_two_b + '<br>';
@@ -147,7 +142,7 @@ var createGame = function() {
 		xhr.setRequestHeader("Content-type", "application/x-www-form-urlencoded");
 		xhr.onload = function () {
 			if (xhr.status === 200) {
-				document.getElementById('nav-selector').style["display"] = "inline";
+				document.getElementById('nav-selector').style["display"] = "";
 				document.getElementById('create-game-div').style["display"] = "none";
 				document.getElementById('modify-game-div').style["display"] = "none";
 			} else {
@@ -193,45 +188,45 @@ var updateGameDetailsView = function(el) {
 			<th scope="col">2)B</th>\
 			<th scope="col">3)A</th>\
 			<th scope="col">3)B</th>\
+			<th scope="col">Update</th>\
 		</tr>\
 	</thead>\
 	<tbody>';
 	for (var i = 0; i < el.length; i++) {
-		// console.log(el[i]);
 		items += '<tr><th scope="row">' + el[i].number + '</th>';
 		items += '<td>\
-			<input type="text" class="form-control" value="' + el[i].throw_one_a + '">\
+			<input type="text" class="form-control" id="field-throw_one-a-' + el[i].number + '" value="' + el[i].throw_one_a + '">\
 		</td>';
 		items += '<td>\
-			<input type="text" class="form-control" value="' + el[i].throw_one_b + '">\
+			<input type="text" class="form-control" id="field-throw_one-b-' + el[i].number + '" value="' + el[i].throw_one_b + '">\
 		</td>';
 		var throw_two_disabled = 'disabled';
 		if (el[i].hasOwnProperty('throw_two_a') && el[i].hasOwnProperty('throw_two_b')) {
 			throw_two_disabled = '';
 		}
 		items += '<td>\
-			<input type="text" class="form-control" value="' + (throw_two_disabled === 'disabled' ? '' : el[i].throw_two_a) + '" ' + throw_two_disabled + '>\
+			<input type="text" class="form-control" id="field-throw_two-a-' + el[i].number + '" value="' + (throw_two_disabled === 'disabled' ? '' : el[i].throw_two_a) + '" ' + throw_two_disabled + '>\
 		</td>';
 		items += '<td>\
-			<input type="text" class="form-control" value="' + (throw_two_disabled === 'disabled' ? '' : el[i].throw_two_a) + '" ' + throw_two_disabled + '>\
+			<input type="text" class="form-control" id="field-throw_two-b-' + el[i].number + '" value="' + (throw_two_disabled === 'disabled' ? '' : el[i].throw_two_a) + '" ' + throw_two_disabled + '>\
 		</td>';
 		var throw_three_disabled = 'disabled';
 		if (el[i].hasOwnProperty('throw_three_a') && el[i].hasOwnProperty('throw_three_b')) {
 			throw_three_disabled = '';
 		}
 		items += '<td>\
-			<input type="text" class="form-control" value="' + (throw_three_disabled === 'disabled' ? '' : el[i].throw_three_b) + '" ' + throw_three_disabled + '>\
+			<input type="text" class="form-control" id="field-throw_three-a-' + el[i].number + '" value="' + (throw_three_disabled === 'disabled' ? '' : el[i].throw_three_b) + '" ' + throw_three_disabled + '>\
 		</td>';
 		items += '<td>\
-			<input type="text" class="form-control" value="' + (throw_three_disabled === 'disabled' ? '' : el[i].throw_three_b) + '" ' + throw_three_disabled + '>\
+			<input type="text" class="form-control" id="field-throw_three-b-' + el[i].number + '" value="' + (throw_three_disabled === 'disabled' ? '' : el[i].throw_three_b) + '" ' + throw_three_disabled + '>\
 		</td>';
+		items += '<td><button type="button" class="btn btn-primary btn-sm" id="btn-field-' + el[i].number + '" onClick="updateGameFrame(this)">Update</button></td>';
 	}
 
 	items += '</tr>\
 		</tbody>\
 	</table></div>';
 	var detailsContainer = document.getElementById('game-details');
-	console.log(detailsContainer);
 	detailsContainer.outerHTML = items;
 }
 
@@ -252,3 +247,36 @@ var getGameDetailsById = function() {
 	};
 	xhr.send();
 };
+
+var updateGameFrame = function(btnElement) {
+	var numberAsId = btnElement.id;
+	var lastIndex = numberAsId.lastIndexOf('-');
+	numberAsId = (numberAsId.substr(lastIndex + 1, numberAsId.length));
+	var fieldThrowThreeA = document.getElementById('field-throw_three-a-' + numberAsId);
+	var fieldThrowThreeB = document.getElementById('field-throw_three-b-' + numberAsId);
+	var fieldThrowTwoA = document.getElementById('field-throw_two-a-' + numberAsId);
+	var fieldThrowTwoB = document.getElementById('field-throw_two-b-' + numberAsId);
+	var fieldThrowOneA = document.getElementById('field-throw_one-a-' + numberAsId);
+	var fieldThrowOneB = document.getElementById('field-throw_one-b-' + numberAsId);
+	var selection = document.getElementById('available-games');
+	var gameId = selection.options[selection.selectedIndex].value;
+	var	params = "game_id=" + gameId + "&number=" + numberAsId + "&throw_one_a=" + fieldThrowOneA.value + '&throw_one_b=' + fieldThrowOneB.value;
+
+	if (numberAsId === 10) {
+		params += "&throw_two_a=" + fieldThrowTwoA.value + '&throw_one_b=' + fieldThrowTwoB.value + "&throw_three_a=" + fieldThrowThreeA.value + '&throw_three_b=' + fieldThrowThreeB.value;
+	}
+
+	var xhr = new XMLHttpRequest();
+	xhr.open('PUT', 'api/frame', true);
+	xhr.setRequestHeader("Content-type", "application/x-www-form-urlencoded");
+	xhr.onload = function () {
+		if (xhr.status === 200) {
+			document.getElementById('nav-selector').style["display"] = "";
+			document.getElementById('create-game-div').style["display"] = "none";
+			document.getElementById('modify-game-div').style["display"] = "none";
+		} else {
+			alert('Request failed.  Returned status of ' + xhr.status);
+		}
+	};
+	xhr.send(params);
+}
