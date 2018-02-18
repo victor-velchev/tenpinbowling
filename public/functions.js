@@ -208,14 +208,14 @@ var updateGameDetailsView = function(el) {
 			<input type="text" class="form-control" id="field-throw_two-a-' + el[i].number + '" value="' + (throw_two_disabled === 'disabled' ? '' : el[i].throw_two_a) + '" ' + throw_two_disabled + '>\
 		</td>';
 		items += '<td>\
-			<input type="text" class="form-control" id="field-throw_two-b-' + el[i].number + '" value="' + (throw_two_disabled === 'disabled' ? '' : el[i].throw_two_a) + '" ' + throw_two_disabled + '>\
+			<input type="text" class="form-control" id="field-throw_two-b-' + el[i].number + '" value="' + (throw_two_disabled === 'disabled' ? '' : el[i].throw_two_b) + '" ' + throw_two_disabled + '>\
 		</td>';
 		var throw_three_disabled = 'disabled';
 		if (el[i].hasOwnProperty('throw_three_a') && el[i].hasOwnProperty('throw_three_b')) {
 			throw_three_disabled = '';
 		}
 		items += '<td>\
-			<input type="text" class="form-control" id="field-throw_three-a-' + el[i].number + '" value="' + (throw_three_disabled === 'disabled' ? '' : el[i].throw_three_b) + '" ' + throw_three_disabled + '>\
+			<input type="text" class="form-control" id="field-throw_three-a-' + el[i].number + '" value="' + (throw_three_disabled === 'disabled' ? '' : el[i].throw_three_a) + '" ' + throw_three_disabled + '>\
 		</td>';
 		items += '<td>\
 			<input type="text" class="form-control" id="field-throw_three-b-' + el[i].number + '" value="' + (throw_three_disabled === 'disabled' ? '' : el[i].throw_three_b) + '" ' + throw_three_disabled + '>\
