@@ -68,9 +68,9 @@ var processScoreToTable = function (scoreObj) {
 	table.innerHTML =
 		'<tr>\
 		<th width="20%">Date</th>\
-		<th width="35%">Name</th>\
-		<th width="35%">Frames</th>\
-		<th width="10%">Score</th>\
+		<th width="40%">Name</th>\
+		<th width="20%">Frames</th>\
+		<th width="20%">Score</th>\
 	</tr>';
 	for (var item in scoreObj) {
 		var dateOfGame = new Date(scoreObj[item].date).toISOString().split('T')[0];
@@ -87,7 +87,7 @@ var processScoreToTable = function (scoreObj) {
 			if (scoreObj[item].frames[i].hasOwnProperty('throw_three_a') && scoreObj[item].frames[i].hasOwnProperty('throw_three_b')) {
 				framesDiv += 'frame ' + scoreObj[item].frames[i].number + ': ' + scoreObj[item].frames[i].throw_three_a + ' | ' + scoreObj[item].frames[i].throw_three_b + '<br>';
 			}
-			scoresDiv += scoreCount + '<br>';
+			scoresDiv += 'Frame ' + scoreObj[item].frames[i].number  + ': ' + frameScore + ', Total: ' + scoreCount + '<br>';
 		}
 		table.innerHTML +=
 			'<tr>\
@@ -122,14 +122,13 @@ var getScore = function () {
 	xhr.send();
 };
 
-//getScore();
-
 var getScoreboard = function() {
 	alert('You clicked: getScoreboard');
 };
 
 var getCreateGame = function() {
 	document.getElementById('nav-selector').style["display"] = "none";
+	document.getElementById('scoreboard-container').style["display"] = "none";
 	document.getElementById('create-game-div').style["display"] = "block";
 };
 
@@ -145,6 +144,7 @@ var createGame = function() {
 				document.getElementById('nav-selector').style["display"] = "";
 				document.getElementById('create-game-div').style["display"] = "none";
 				document.getElementById('modify-game-div').style["display"] = "none";
+				document.getElementById('scoreboard-container').style["display"] = "none";
 			} else {
 				alert('Request failed.  Returned status of ' + xhr.status);
 			}
@@ -168,6 +168,7 @@ var getModifyGame = function() {
 				document.getElementById('available-games').innerHTML = items;
 				document.getElementById('nav-selector').style["display"] = "none";
 				document.getElementById('create-game-div').style["display"] = "none";
+				document.getElementById('scoreboard-container').style["display"] = "none";
 				document.getElementById('modify-game-div').style["display"] = "inline";
 			}
 		} else {
