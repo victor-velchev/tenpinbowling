@@ -118,7 +118,7 @@ $createFrame = function (Request $request, Response $response, array $args) {
 
 // $updateFrame = function (Request $request, Response $response, array $args) {
 // 	$resp = array('status'=>'', 'message'=>'', 'data'=>'');
-// 	$status = 400;
+// 	$status = 200;
 // 	$args = $request->getParsedBody();
 
 // 	if (empty($args['game_id']) || empty($args['number']) || empty($args['strike']) || empty($args['spare']) || (empty($args['throw_one']) && $args['throw_one'] != '0') || (empty($args['throw_two']) && $args['throw_two'] != '0')) {
@@ -152,7 +152,7 @@ $createFrame = function (Request $request, Response $response, array $args) {
 // 				$resp['message'] = $e->getMessage();
 // 			}
 // 		} else {
-// 			$statu = 200;
+// 			$status = 200;
 // 			$resp['status'] = 'error';
 // 			$resp['message'] = 'Some of the required parameters to update the frame are incorrect';
 // 		}
@@ -220,7 +220,7 @@ $getGame = function (Request $request, Response $response, array $args) {
 
 $getGameById = function (Request $request, Response $response, array $args) {
 	$resp = array('status'=>'', 'message'=>'', 'data'=>'');
-	$status = 400;
+	$status = 200;
 
 	if (empty($args['game_id'])) {
 		$status = 400;
@@ -259,7 +259,7 @@ $getGameById = function (Request $request, Response $response, array $args) {
 				$resp['message'] = $e->getMessage();
 			}
 		} else {
-			$statu = 200;
+			$status = 200;
 			$resp['status'] = 'error';
 			$resp['message'] = 'Some of the required parameters to update the frame are incorrect';
 		}

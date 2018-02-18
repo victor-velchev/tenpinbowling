@@ -51,7 +51,7 @@
 
 			<div class="row" id="create-game-div" style="display: none">
 				<div class="col-md-6">
-					<p>Foo</p>
+					<p>Create a game here</p>
 					<div class="input-group mb-3">
 						<div class="input-group-prepend">
 							<span class="input-group-text" id="basic-addon">»</span>
@@ -63,16 +63,13 @@
 				</div>
 			</div>
 
-			<div class="row" id="modify-game-div" style="display: ">
-				<div class="col-md-6">
-					<p>Foo</p>
-					<div class="input-group mb-3">
-						<div class="input-group-prepend">
-							<span class="input-group-text" id="basic-addon">»</span>
-						</div>
-						<input type="text" class="form-control" placeholder="Enter the name of your game here" aria-label="gamename" aria-describedby="basic-addon"
-						 id="gamename">
-						<button type="button" class="btn btn-primary" onClick="createGame()" style="margin-left: 10px">Create</button>
+			<div class="row" id="modify-game-div" style="display: none">
+				<div class="col-md-12">
+					<p>Modify a game here</p>
+					<select class="custom-select" id="available-games" onChange="getGameDetailsById()">
+						<option selected>Select a game</option>
+					</select>
+					<div id="game-details" style="display: none">
 					</div>
 				</div>
 			</div>
@@ -80,7 +77,7 @@
 			<hr>
 
 			<footer>
-				<p>© 2018 Ten Pin Bowling incorporated, Inc.</p>
+				<p>© 2018 Ten Pin Bowling, Inc.</p>
 			</footer>
 		</div>
 	</div>
@@ -100,17 +97,6 @@
 				<td>Mark</td>
 				<td>Otto</td>
 				<td>@mdo</td>
-			</tr>
-			<tr>
-				<th scope="row">2</th>
-				<td>Jacob</td>
-				<td>Thornton</td>
-				<td>@fat</td>
-			</tr>
-			<tr>
-				<th scope="row">3</th>
-				<td colspan="2">Larry the Bird</td>
-				<td>@twitter</td>
 			</tr>
 		</tbody>
 	</table> -->

@@ -147,8 +147,9 @@ var createGame = function() {
 		xhr.setRequestHeader("Content-type", "application/x-www-form-urlencoded");
 		xhr.onload = function () {
 			if (xhr.status === 200) {
-				document.getElementById('nav-selector').style["display"] = "";
+				document.getElementById('nav-selector').style["display"] = "inline";
 				document.getElementById('create-game-div').style["display"] = "none";
+				document.getElementById('modify-game-div').style["display"] = "none";
 			} else {
 				alert('Request failed.  Returned status of ' + xhr.status);
 			}
@@ -163,7 +164,84 @@ var getModifyGame = function() {
 	xhr.onload = function () {
 		if (xhr.status === 200) {
 			var resp = JSON.parse(xhr.responseText);
-			console.log(resp.data);
+			if (resp.hasOwnProperty('data')) {
+				var items = '';
+				items += '<option selected>Select a game</option>';
+				for (var i = 0; i < resp.data.length; i++) {
+					items += '<option value="' + resp.data[i].id + '">' + resp.data[i].name + '</option>';
+				}
+				document.getElementById('available-games').innerHTML = items;
+				document.getElementById('nav-selector').style["display"] = "none";
+				document.getElementById('create-game-div').style["display"] = "none";
+				document.getElementById('modify-game-div').style["display"] = "inline";
+			}
+		} else {
+			alert('Request failed.  Returned status of ' + xhr.status);
+		}
+	};
+	xhr.send();
+};
+
+var updateGameDetailsView = function(el) {
+	var items = '<div id="game-details"><table class="table table-hover">\
+	<thead>\
+		<tr>\
+			<th scope="col">#</th>\
+			<th scope="col">1)A</th>\
+			<th scope="col">1)B</th>\
+			<th scope="col">2)A</th>\
+			<th scope="col">2)B</th>\
+			<th scope="col">3)A</th>\
+			<th scope="col">3)B</th>\
+		</tr>\
+	</thead>\
+	<tbody>';
+	for (var i = 0; i < el.length; i++) {
+		// console.log(el[i]);
+		items += '<tr><th scope="row">' + el[i].number + '</th>';
+		items += '<td>\
+			<input type="text" class="form-control" value="' + el[i].throw_one_a + '">\
+		</td>';
+		items += '<td>\
+			<input type="text" class="form-control" value="' + el[i].throw_one_b + '">\
+		</td>';
+		if (el[i].hasOwnProperty('throw_two_a') && el[i].hasOwnProperty('throw_two_b')) {
+			items += '<td>\
+				<input type="text" class="form-control" value="' + el[i].throw_two_a + '">\
+			</td>';
+			items += '<td>\
+				<input type="text" class="form-control" value="' + el[i].throw_two_b + '">\
+			</td>';
+		}
+		if (el[i].hasOwnProperty('throw_three_a') && el[i].hasOwnProperty('throw_three_b')) {
+			items += '<td>\
+				<input type="text" class="form-control" value="' + el[i].throw_three_a + '">\
+			</td>';
+			items += '<td>\
+				<input type="text" class="form-control" value="' + el[i].throw_three_b + '">\
+			</td>';
+		}
+	}
+
+	items += '</tr>\
+		</tbody>\
+	</table></div>';
+	var detailsContainer = document.getElementById('game-details');
+	console.log(detailsContainer);
+	detailsContainer.outerHTML = items;
+}
+
+var getGameDetailsById = function() {
+	var selection = document.getElementById('available-games');
+	var gameId = selection.options[selection.selectedIndex].value;
+	var xhr = new XMLHttpRequest();
+	xhr.open('GET', 'api/game/' + gameId);
+	xhr.onload = function () {
+		if (xhr.status === 200) {
+			var resp = JSON.parse(xhr.responseText);
+			if (resp.hasOwnProperty('data')) {
+				return updateGameDetailsView(resp.data);
+			}
 		} else {
 			alert('Request failed.  Returned status of ' + xhr.status);
 		}
